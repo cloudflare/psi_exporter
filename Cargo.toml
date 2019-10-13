@@ -1,0 +1,20 @@
+[package]
+name = "psi_exporter"
+version = "0.1.0"
+authors = ["Ivan Babrou <psi_exporter@ivan.computer>"]
+edition = "2018"
+
+[dependencies]
+clap = "2"
+walkdir = "2"
+psi = "0.1"
+hyper = "0.12"
+futures = "0.1"
+maplit = "1.0"
+
+[dev-dependencies]
+simplelog = "0.7.1"
+
+[dependencies.prometheus]
+version = "0.7"
+default-features = false
