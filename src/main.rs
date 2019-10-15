@@ -4,13 +4,12 @@ use std::net;
 
 use std::io::Read;
 
-use hyper;
 use maplit;
 use prometheus;
 use psi;
+use tiny_http;
 use walkdir;
 
-use futures::future::Future;
 use prometheus::Encoder;
 
 const MOUNTPOINT: &str = "/sys/fs/cgroup";
@@ -47,36 +46,31 @@ fn main() {
         )
         .get_matches();
 
-    let addr = &matches
-        .value_of("web.listen-address")
-        .unwrap()
-        .parse()
-        .unwrap();
+    let addr = &matches.value_of("web.listen-address").unwrap();
 
     let report_avg = !matches.is_present("metrics.disable-avg");
     let report_zeros = !matches.is_present("metrics.silence-zeros");
 
     println!("Listening address: {}", addr);
 
-    let server = hyper::Server::bind(&addr)
-        .serve(move || {
-            let encoder = prometheus::TextEncoder::new();
+    let server = tiny_http::Server::http(addr).unwrap();
 
-            hyper::service::service_fn_ok(move |_| {
-                let metrics =
-                    registry(&get_service_measurements(), report_avg, report_zeros).gather();
-                let mut buffer = vec![];
-                encoder.encode(&metrics, &mut buffer).unwrap();
+    let encoder = prometheus::TextEncoder::new();
+    let content_type = tiny_http::Header::from_bytes(
+        &b"Content-type"[..],
+        encoder.format_type().to_owned().as_str(),
+    )
+    .unwrap();
 
-                hyper::Response::builder()
-                    .header(hyper::header::CONTENT_TYPE, encoder.format_type())
-                    .body(hyper::Body::from(buffer))
-                    .unwrap()
-            })
-        })
-        .map_err(|e| eprintln!("Server error: {}", e));
+    for request in server.incoming_requests() {
+        let metrics = registry(&get_service_measurements(), report_avg, report_zeros).gather();
+        let mut buffer = vec![];
+        encoder.encode(&metrics, &mut buffer).unwrap();
 
-    hyper::rt::run(server);
+        request
+            .respond(tiny_http::Response::from_data(buffer).with_header(content_type.clone()))
+            .unwrap_or_else(|e| eprintln!("error responding: {}", e));
+    }
 }
 
 fn registry(
