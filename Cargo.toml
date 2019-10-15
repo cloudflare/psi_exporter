@@ -8,8 +8,7 @@ edition = "2018"
 clap = "2"
 walkdir = "2"
 psi = "0.1"
-hyper = "0.12"
-futures = "0.1"
+tiny_http = "0.6"
 maplit = "1.0"
 
 [dev-dependencies]
