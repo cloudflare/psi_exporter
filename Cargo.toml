@@ -17,3 +17,6 @@ simplelog = "0.7.1"
 [dependencies.prometheus]
 version = "0.7"
 default-features = false
+
+[profile.release]
+lto = true
