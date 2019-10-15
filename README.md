@@ -11,7 +11,7 @@ Kernel must support PSI (`CONFIG_PSI=y`), which requires at least Linux 4.20.
 The following metrics are exported:
 
 ```
-ivan@131m7:~$ curl -s http://ip6-localhost:12345/ | grep -E '(journald|^#)'
+$ curl -s http://ip6-localhost:12345/ | grep -E '(journald|^#)'
 # HELP pressure_avg_10s_ratio Ratio of time spent under pressure in the last 10s at time of measurement
 # TYPE pressure_avg_10s_ratio gauge
 pressure_avg_10s_ratio{controller="cpu",id="/system.slice/systemd-journald.service",kind="some"} 0
@@ -35,9 +35,9 @@ pressure_avg_60s_ratio{controller="memory",id="/system.slice/systemd-journald.se
 pressure_avg_60s_ratio{controller="memory",id="/system.slice/systemd-journald.service",kind="some"} 0
 # HELP pressure_total_seconds Total time spent under pressure
 # TYPE pressure_total_seconds counter
-pressure_total_seconds{controller="cpu",id="/system.slice/systemd-journald.service",kind="some"} 0.000504
-pressure_total_seconds{controller="io",id="/system.slice/systemd-journald.service",kind="full"} 0
-pressure_total_seconds{controller="io",id="/system.slice/systemd-journald.service",kind="some"} 0
+pressure_total_seconds{controller="cpu",id="/system.slice/systemd-journald.service",kind="some"} 0.001546
+pressure_total_seconds{controller="io",id="/system.slice/systemd-journald.service",kind="full"} 1.367656
+pressure_total_seconds{controller="io",id="/system.slice/systemd-journald.service",kind="some"} 1.371462
 pressure_total_seconds{controller="memory",id="/system.slice/systemd-journald.service",kind="full"} 0
 pressure_total_seconds{controller="memory",id="/system.slice/systemd-journald.service",kind="some"} 0
 ```
