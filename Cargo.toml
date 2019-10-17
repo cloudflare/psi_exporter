@@ -7,12 +7,15 @@ edition = "2018"
 [dependencies]
 clap = "2"
 walkdir = "2"
-psi = "0.1"
 tiny_http = "0.6"
 maplit = "1.0"
 
 [dev-dependencies]
 simplelog = "0.7.1"
+
+[dependencies.psi]
+version = "0.1"
+default-features = false
 
 [dependencies.prometheus]
 version = "0.7"
