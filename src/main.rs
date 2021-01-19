@@ -7,7 +7,7 @@ use std::io::Read;
 use prometheus::Encoder;
 
 const MOUNTPOINT: &str = "/sys/fs/cgroup";
-const PRESSIRE_SUFFIX: &str = ".pressure";
+const PRESSURE_SUFFIX: &str = ".pressure";
 
 fn main() {
     let matches = clap::App::new(clap::crate_name!())
@@ -197,7 +197,7 @@ fn get_service_measurements() -> HashMap<String, PsiMeasurements> {
 
         let mut controller = path.file_name().unwrap().to_str().unwrap().to_string();
 
-        controller.truncate(controller.len() - PRESSIRE_SUFFIX.len());
+        controller.truncate(controller.len() - PRESSURE_SUFFIX.len());
 
         let mut file = skip_fail!(fs::OpenOptions::new().read(true).open(path));
         let mut buf = String::with_capacity(256);
@@ -251,7 +251,7 @@ fn is_pressure(entry: &walkdir::DirEntry) -> bool {
     entry
         .file_name()
         .to_str()
-        .map(|s| s.ends_with(PRESSIRE_SUFFIX))
+        .map(|s| s.ends_with(PRESSURE_SUFFIX))
         .unwrap_or(false)
 }
 
