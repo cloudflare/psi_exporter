@@ -4,12 +4,6 @@ use std::net;
 
 use std::io::Read;
 
-use maplit;
-use prometheus;
-use psi;
-use tiny_http;
-use walkdir;
-
 use prometheus::Encoder;
 
 const MOUNTPOINT: &str = "/sys/fs/cgroup";
