@@ -1,4 +1,4 @@
-use std::collections;
+use std::collections::HashMap;
 use std::fs;
 use std::net;
 
@@ -68,7 +68,7 @@ fn main() {
 }
 
 fn registry(
-    service_measurements: &collections::HashMap<String, PsiMeasurements>,
+    service_measurements: &HashMap<String, PsiMeasurements>,
     report_avg: bool,
     report_zeros: bool,
 ) -> prometheus::Registry {
@@ -178,8 +178,8 @@ macro_rules! skip_fail {
     };
 }
 
-fn get_service_measurements() -> collections::HashMap<String, PsiMeasurements> {
-    let mut services: collections::HashMap<_, PsiMeasurements> = collections::HashMap::new();
+fn get_service_measurements() -> HashMap<String, PsiMeasurements> {
+    let mut services: HashMap<_, PsiMeasurements> = HashMap::new();
 
     for entry in walkdir::WalkDir::new(MOUNTPOINT)
         .into_iter()
