@@ -1,19 +1,13 @@
-use std::collections;
+use std::collections::HashMap;
 use std::fs;
 use std::net;
 
 use std::io::Read;
 
-use maplit;
-use prometheus;
-use psi;
-use tiny_http;
-use walkdir;
-
 use prometheus::Encoder;
 
 const MOUNTPOINT: &str = "/sys/fs/cgroup";
-const PRESSIRE_SUFFIX: &str = ".pressure";
+const PRESSURE_SUFFIX: &str = ".pressure";
 
 fn main() {
     let matches = clap::App::new(clap::crate_name!())
@@ -74,7 +68,7 @@ fn main() {
 }
 
 fn registry(
-    service_measurements: &collections::HashMap<String, PsiMeasurements>,
+    service_measurements: &HashMap<String, PsiMeasurements>,
     report_avg: bool,
     report_zeros: bool,
 ) -> prometheus::Registry {
@@ -184,8 +178,8 @@ macro_rules! skip_fail {
     };
 }
 
-fn get_service_measurements() -> collections::HashMap<String, PsiMeasurements> {
-    let mut services: collections::HashMap<_, PsiMeasurements> = collections::HashMap::new();
+fn get_service_measurements() -> HashMap<String, PsiMeasurements> {
+    let mut services: HashMap<_, PsiMeasurements> = HashMap::new();
 
     for entry in walkdir::WalkDir::new(MOUNTPOINT)
         .into_iter()
@@ -203,7 +197,7 @@ fn get_service_measurements() -> collections::HashMap<String, PsiMeasurements> {
 
         let mut controller = path.file_name().unwrap().to_str().unwrap().to_string();
 
-        controller.truncate(controller.len() - PRESSIRE_SUFFIX.len());
+        controller.truncate(controller.len() - PRESSURE_SUFFIX.len());
 
         let mut file = skip_fail!(fs::OpenOptions::new().read(true).open(path));
         let mut buf = String::with_capacity(256);
@@ -257,7 +251,7 @@ fn is_pressure(entry: &walkdir::DirEntry) -> bool {
     entry
         .file_name()
         .to_str()
-        .map(|s| s.ends_with(PRESSIRE_SUFFIX))
+        .map(|s| s.ends_with(PRESSURE_SUFFIX))
         .unwrap_or(false)
 }
 
