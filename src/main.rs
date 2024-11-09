@@ -8,6 +8,7 @@ use prometheus::Encoder;
 
 const MOUNTPOINT: &str = "/sys/fs/cgroup";
 const PRESSURE_SUFFIX: &str = ".pressure";
+const CGROUP_PRESSURE_OPTION_FILE: &str = "cgroup.pressure";
 
 fn main() {
     let matches = clap::App::new(clap::crate_name!())
@@ -251,7 +252,7 @@ fn is_pressure(entry: &walkdir::DirEntry) -> bool {
     entry
         .file_name()
         .to_str()
-        .map(|s| s.ends_with(PRESSURE_SUFFIX))
+        .map(|s| s.ends_with(PRESSURE_SUFFIX) && s != CGROUP_PRESSURE_OPTION_FILE)
         .unwrap_or(false)
 }
 
