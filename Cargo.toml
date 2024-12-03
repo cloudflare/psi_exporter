@@ -7,7 +7,7 @@ edition = "2018"
 [dependencies]
 clap = "2"
 walkdir = "2"
-tiny_http = "0.6"
+tiny_http = "0.8"
 maplit = "1.0"
 
 [dev-dependencies]
