@@ -120,14 +120,14 @@ fn registry(
                 "full" => measurement.full.as_ref(),
             };
 
-            for (kind, data) in kinds {
-                let labels = &[service.as_str(), controller, kind];
-
-                if data == None {
-                    continue;
+            for (kind, data) in kinds.into_iter().filter_map(|(kind, data_opt)| {
+                if let Some(data) = data_opt {
+                    Some((kind, data))
+                } else {
+                    None
                 }
-
-                let data = data.unwrap();
+            }) {
+                let labels = &[service.as_str(), controller, kind];
 
                 if report_zeros || data.total.as_nanos() > 0 {
                     total
@@ -184,9 +184,11 @@ fn get_service_measurements() -> HashMap<String, PsiMeasurements> {
     for entry in walkdir::WalkDir::new(MOUNTPOINT)
         .into_iter()
         .filter_entry(|e| is_interesting(e))
-        .filter(|e| is_pressure(&e.as_ref().unwrap()))
+        .filter_map(|e_res| match e_res {
+            Ok(e) if is_pressure(&e) => Some(e),
+            _ => None,
+        })
     {
-        let entry = entry.unwrap();
         let path = entry.path();
 
         let dir_name = std::path::Path::new("/")
